@@ -37,16 +37,21 @@ public class DepartmentsController : ControllerBase
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest(ModelState);
+            return BadRequest(ModelState); // 400
         }
-        
-        //var departmentToAdd = new DepartmentEntity { Name= request.Name };
+        // go to the database and see if there is already a department that name.
         var departmentToAdd = _mapper.Map<DepartmentEntity>(request);
         _context.Departments.Add(departmentToAdd);
-        await _context.SaveChangesAsync();
-       
-        var reponse = _mapper.Map<DepartmentSummaryItem>(departmentToAdd);
-        return Ok(request);
+        try
+        {
+            await _context.SaveChangesAsync();
+            var response = _mapper.Map<DepartmentSummaryItem>(departmentToAdd);
+            return Ok(response);
+        }
+        catch (DbUpdateException)
+        {
+            return BadRequest("That Department Exists");
+        }
 
     }
 }
