@@ -1,3 +1,6 @@
+using HrApi.Domain;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 // the default web application builder has about 190+ "Services" that do all the work in your API.
 
@@ -9,6 +12,19 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+var hrConnectionString = builder.Configuration.GetConnectionString("hr-data");
+
+if(hrConnectionString is null)
+{
+    throw new Exception("No Connection String for HR Database");
+}
+
+builder.Services.AddDbContext<HrDataContext>(options =>
+{
+    options.UseSqlServer(hrConnectionString);
+});
+
 
 // before the application is built is above here services.
 var app = builder.Build();
