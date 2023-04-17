@@ -4,21 +4,50 @@ using HrApi.Domain;
 using HrApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Metadata.Ecma335;
 
 namespace HrApi.Controllers;
-[ApiController]
+
 public class DepartmentsController : ControllerBase
 {
+
     private readonly HrDataContext _context;
     private readonly IMapper _mapper;
-    private readonly Mapper _config;
+    private readonly MapperConfiguration _config;
 
-    public DepartmentsController(HrDataContext context, IMapper mapper)
+    public DepartmentsController(HrDataContext context, IMapper mapper, MapperConfiguration config)
     {
         _context = context;
         _mapper = mapper;
+        _config = config;
     }
+
+    [HttpPost("/departments")]
+    public async Task<ActionResult> AddADepartment([FromBody] DepartmentCreateRequest request)
+    {
+
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState); // 400
+
+        }
+
+
+
+        var departmentToAdd = _mapper.Map<DepartmentEntity>(request);
+        _context.Departments.Add(departmentToAdd);
+        try
+        {
+            await _context.SaveChangesAsync();
+            var response = _mapper.Map<DepartmentSummaryItem>(departmentToAdd);
+            return Ok(response);
+        }
+        catch (DbUpdateException ex)
+        {
+            return BadRequest("That Department Exists");
+        }
+    }
+
+
     // GET /departments
     [HttpGet("/departments")]
     public async Task<ActionResult<DepartmentsResponse>> GetDepartments()
@@ -30,28 +59,5 @@ public class DepartmentsController : ControllerBase
                 .ToListAsync()
         };
         return Ok(response);
-    }
-
-    [HttpPost("/departments")]
-    public async Task<ActionResult<DepartmentsResponse>> AddDepartment([FromBody] DepartmentCreateRequest request)
-    {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState); // 400
-        }
-        // go to the database and see if there is already a department that name.
-        var departmentToAdd = _mapper.Map<DepartmentEntity>(request);
-        _context.Departments.Add(departmentToAdd);
-        try
-        {
-            await _context.SaveChangesAsync();
-            var response = _mapper.Map<DepartmentSummaryItem>(departmentToAdd);
-            return Ok(response);
-        }
-        catch (DbUpdateException)
-        {
-            return BadRequest("That Department Exists");
-        }
-
     }
 }

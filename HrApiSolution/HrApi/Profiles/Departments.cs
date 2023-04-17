@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Routing.Constraints;
 
 namespace HrApi.Profiles
 {
-    public class Department: Profile
+    public class Departments: Profile
     {
-        public Department()
+        public Departments()
         {
             CreateMap<DepartmentCreateRequest, DepartmentEntity>();
             CreateMap<DepartmentEntity, DepartmentSummaryItem>()
