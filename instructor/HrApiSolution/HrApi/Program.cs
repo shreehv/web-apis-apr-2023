@@ -44,6 +44,7 @@ app.MapControllers(); // it is going to create a phone directory.
 // route table:
     // if someone does a GET /deparments:
             // create an instance of the DepartmentsController
+               // to create an instance of this, you have to give it a HrDataContext
             // Call the GetDepartments method.
 
 app.Run(); // Starting the web server, and "blocking here"
