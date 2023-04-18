@@ -21,6 +21,8 @@ public class DepartmentsController : ControllerBase
         _config = config;
     }
 
+
+    [ResponseCache(Duration = 5, Location = ResponseCacheLocation.Any)]
     [HttpPost("/departments")]
     public async Task<ActionResult> AddADepartment([FromBody] DepartmentCreateRequest request)
     {
@@ -68,7 +70,7 @@ public class DepartmentsController : ControllerBase
 
     // GET /departments/8
     [ResponseCache(NoStore = true)]
-    [HttpGet("/departments/{id:int}")]
+    [HttpGet("/departments/{id:int}", Name = "get-department-by-id")]
     public async Task<ActionResult<DepartmentsResponse>> GetDepartments(int id)
     {
         var response = await _context.Departments

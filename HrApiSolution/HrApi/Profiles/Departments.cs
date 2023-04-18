@@ -10,7 +10,10 @@ namespace HrApi.Profiles
     {
         public Departments()
         {
-            CreateMap<DepartmentCreateRequest, DepartmentEntity>();
+            CreateMap<DepartmentCreateRequest, DepartmentEntity>()
+                 .ForMember(dest => dest.Name, opts => opts.MapFrom(src => src.Name.ToUpper()));
+
+
             CreateMap<DepartmentEntity, DepartmentSummaryItem>()
                 .ForMember(dest => dest.Id, opts => opts.MapFrom(src => src.Id.ToString()));
         }
