@@ -39,7 +39,7 @@ public class DepartmentsController : ControllerBase
         {
             await _context.SaveChangesAsync();
             var response = _mapper.Map<DepartmentSummaryItem>(departmentToAdd);
-            return Ok(response);
+            return CreatedAtRoute("get-department-by-id", new { id = response.Id }, response);
         }
         catch (DbUpdateException ex)
         {
@@ -49,6 +49,7 @@ public class DepartmentsController : ControllerBase
 
 
     // GET /departments
+    [ResponseCache(Duration = 5, Location = ResponseCacheLocation.Any)]
     [HttpGet("/departments")]
     public async Task<ActionResult<DepartmentsResponse>> GetDepartments()
     {
@@ -59,5 +60,24 @@ public class DepartmentsController : ControllerBase
                 .ToListAsync()
         };
         return Ok(response);
+    }
+    [ResponseCache(NoStore = true)]
+    // GET /departments/8
+    [HttpGet("/departments/{id:int}")]
+    public async Task<ActionResult<DepartmentsResponse>> GetDepartments(int id)
+    {
+        var response = await _context.Departments
+             .Where(dept => dept.Id == id)
+             .ProjectTo<DepartmentSummaryItem>(_config)
+             .SingleOrDefaultAsync();
+        if (response is null)
+        {
+            return NotFound();
+        }
+        else
+        {
+            return Ok(response);
+        }
+
     }
 }

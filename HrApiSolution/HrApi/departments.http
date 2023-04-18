@@ -8,5 +8,9 @@ POST http://localhost:1337/departments
 Content-Type: application/json
 
 {
-  "name":"Tester"
+  "name":"Software Testers"
 }
+
+### Getting a Departments
+
+GET http://localhost:1337/departments/1
