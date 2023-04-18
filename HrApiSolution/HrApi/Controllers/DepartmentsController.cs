@@ -6,7 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace HrApi.Controllers;
-
+[Route("/departments/")]
+[Produces("application/json")]
 public class DepartmentsController : ControllerBase
 {
 
@@ -21,7 +22,35 @@ public class DepartmentsController : ControllerBase
         _config = config;
     }
 
-    [HttpDelete("/departments/{id:int}")]
+
+    [HttpPut("{id:int}")]
+    [ProducesResponseType(204)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(404)]
+    public async Task<ActionResult> UpdateDepartment(int id, [FromBody] DepartmentUpdateRequest request)
+    {
+        if (id != request.Id)
+        {
+            return BadRequest();
+        }
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        var savedThingy = await _context.GetActiveDepartments().SingleOrDefaultAsync(d => d.Id == id);
+        if (savedThingy is null)
+        {
+            return NotFound(); // or you could do an upsert
+        }
+        else
+        {
+            savedThingy.Name = request.Name; // could use automapper, etc. 
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+    }
+
+    [HttpDelete("{id:int}")]
     public async Task<ActionResult> RemoveDepartment(int id)
     {
         var department = await _context.GetActiveDepartments()
@@ -35,7 +64,7 @@ public class DepartmentsController : ControllerBase
         return NoContent(); // 204 - success, but no content (body)
     }
 
-    [HttpPost("/departments")]
+    [HttpPost("")]
     [ResponseCache(Duration = 5, Location = ResponseCacheLocation.Any)]
     public async Task<ActionResult> AddADepartment([FromBody] DepartmentCreateRequest request)
     {
@@ -64,7 +93,7 @@ public class DepartmentsController : ControllerBase
 
     // GET /departments
     [ResponseCache(Duration = 5, Location = ResponseCacheLocation.Any)]
-    [HttpGet("/departments")]
+    [HttpGet("")]
     public async Task<ActionResult<DepartmentsResponse>> GetDepartments()
     {
         var response = new DepartmentsResponse
@@ -76,8 +105,10 @@ public class DepartmentsController : ControllerBase
         return Ok(response);
     }
     // GET /departments/8
-
-    [HttpGet("/departments/{id:int}", Name = "get-department-by-id")]
+    
+    [HttpGet("{id:int}", Name = "get-department-by-id")]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(404)]
     public async Task<ActionResult> GetDepartmentById(int id)
     {
         var response = await _context.GetActiveDepartments()
