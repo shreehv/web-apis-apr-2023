@@ -8,9 +8,14 @@ POST http://localhost:1337/departments
 Content-Type: application/json
 
 {
-  "name":"Software Testers"
+  "name":"Scrum Master"
 }
 
 ### Getting a Departments
 
-GET http://localhost:1337/departments/1
+GET http://localhost:1337/departments/6
+
+
+
+### Delete a Department
+DELETE http://localhost:1337/departments/6

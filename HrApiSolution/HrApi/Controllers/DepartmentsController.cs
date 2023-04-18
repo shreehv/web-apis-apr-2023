@@ -21,6 +21,20 @@ public class DepartmentsController : ControllerBase
         _config = config;
     }
 
+    [HttpDelete("/departments/{id:int}")]
+    public async Task<ActionResult> RemoveDepartment(int id)
+    {
+        var department = await _context.GetActiveDepartments()
+        .SingleOrDefaultAsync(d => d.Id == id);
+        if (department != null)
+        {
+            department.Removed = true;
+            await _context.SaveChangesAsync();
+        }
+        return NoContent(); // 204 - success, but no content (body)
+    }
+
+
 
     [ResponseCache(Duration = 5, Location = ResponseCacheLocation.Any)]
     [HttpPost("/departments")]
@@ -57,7 +71,7 @@ public class DepartmentsController : ControllerBase
     {
         var response = new DepartmentsResponse
         {
-            Data = await _context.Departments
+            Data = await _context.GetActiveDepartments()
                 .ProjectTo<DepartmentSummaryItem>(_config)
                 .ToListAsync()
         };
@@ -73,7 +87,7 @@ public class DepartmentsController : ControllerBase
     [HttpGet("/departments/{id:int}", Name = "get-department-by-id")]
     public async Task<ActionResult<DepartmentsResponse>> GetDepartments(int id)
     {
-        var response = await _context.Departments
+        var response = await _context.GetActiveDepartments()
              .Where(dept => dept.Id == id)
              .ProjectTo<DepartmentSummaryItem>(_config)
              .SingleOrDefaultAsync();
