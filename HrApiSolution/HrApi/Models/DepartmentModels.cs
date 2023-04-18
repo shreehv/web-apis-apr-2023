@@ -20,6 +20,14 @@ public record DepartmentCreateRequest
 }
 
 
+public record DepartmentUpdateRequest
+{
+    [Required]
+    public int? Id { get; set; } 
+    [Required, MinLength(3), MaxLength(20)]
+    public string Name { get; set; } = string.Empty;
+}
+
 /*
  * {
     "data": [

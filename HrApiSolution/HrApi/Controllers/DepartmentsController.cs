@@ -21,6 +21,32 @@ public class DepartmentsController : ControllerBase
         _config = config;
     }
 
+
+    [HttpPut("/departments/{id:int}")]
+    public async Task<ActionResult> UpdateDepartment(int id, [FromBody] DepartmentUpdateRequest request)
+    {
+        if (id != request.Id)
+        {
+            return BadRequest();
+        }
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        var savedThingy = await _context.GetActiveDepartments().SingleOrDefaultAsync(d => d.Id == id);
+        if (savedThingy is null)
+        {
+            return NotFound(); // or you could do an upsert
+        }
+        else
+        {
+            savedThingy.Name = request.Name; // could use automapper, etc. 
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+    }
+
+
     [HttpDelete("/departments/{id:int}")]
     public async Task<ActionResult> RemoveDepartment(int id)
     {
