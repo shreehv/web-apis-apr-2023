@@ -21,49 +21,22 @@ public class DepartmentsController : ControllerBase
         _config = config;
     }
 
-
-    [HttpPut("/departments/{id:int}")]
-    public async Task<ActionResult> UpdateDepartment(int id, [FromBody] DepartmentUpdateRequest request)
-    {
-        if (id != request.Id)
-        {
-            return BadRequest();
-        }
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-        var savedThingy = await _context.GetActiveDepartments().SingleOrDefaultAsync(d => d.Id == id);
-        if (savedThingy is null)
-        {
-            return NotFound(); // or you could do an upsert
-        }
-        else
-        {
-            savedThingy.Name = request.Name; // could use automapper, etc. 
-            await _context.SaveChangesAsync();
-            return NoContent();
-        }
-    }
-
-
     [HttpDelete("/departments/{id:int}")]
     public async Task<ActionResult> RemoveDepartment(int id)
     {
         var department = await _context.GetActiveDepartments()
-        .SingleOrDefaultAsync(d => d.Id == id);
+            .SingleOrDefaultAsync(d => d.Id == id);
         if (department != null)
         {
             department.Removed = true;
+            //_context.Departments.Remove(department);
             await _context.SaveChangesAsync();
         }
         return NoContent(); // 204 - success, but no content (body)
-    }
+    }
 
-
-
-    [ResponseCache(Duration = 5, Location = ResponseCacheLocation.Any)]
     [HttpPost("/departments")]
+    [ResponseCache(Duration = 5, Location = ResponseCacheLocation.Any)]
     public async Task<ActionResult> AddADepartment([FromBody] DepartmentCreateRequest request)
     {
 
@@ -73,9 +46,8 @@ public class DepartmentsController : ControllerBase
 
         }
 
-
-
         var departmentToAdd = _mapper.Map<DepartmentEntity>(request);
+
         _context.Departments.Add(departmentToAdd);
         try
         {
@@ -103,15 +75,10 @@ public class DepartmentsController : ControllerBase
         };
         return Ok(response);
     }
-
-
-
-
-
     // GET /departments/8
-    [ResponseCache(NoStore = true)]
+
     [HttpGet("/departments/{id:int}", Name = "get-department-by-id")]
-    public async Task<ActionResult<DepartmentsResponse>> GetDepartments(int id)
+    public async Task<ActionResult> GetDepartmentById(int id)
     {
         var response = await _context.GetActiveDepartments()
              .Where(dept => dept.Id == id)
@@ -125,6 +92,5 @@ public class DepartmentsController : ControllerBase
         {
             return Ok(response);
         }
-
     }
 }

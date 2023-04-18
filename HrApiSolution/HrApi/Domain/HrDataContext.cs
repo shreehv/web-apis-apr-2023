@@ -16,13 +16,13 @@ public class HrDataContext : DbContext
     {
         return Departments.Where(d => d.Removed == false);
     }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<DepartmentEntity>().Property(p => p.Name)
             .HasMaxLength(20);
-        modelBuilder.Entity<DepartmentEntity>()
-            .HasIndex(b  => b.Name).IsUnique();
-    }
 
+        modelBuilder.Entity<DepartmentEntity>()
+            .HasIndex(b => b.Name).IsUnique();
+
+    }
 }
