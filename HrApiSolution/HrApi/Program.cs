@@ -66,10 +66,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     // Open API - the documentation.
-    app.UseSwagger(options =>
-    {
-       
-    });
+    app.UseSwagger();
     app.UseSwaggerUI();
 }
 
