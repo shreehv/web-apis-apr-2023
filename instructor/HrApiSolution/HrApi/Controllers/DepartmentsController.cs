@@ -3,6 +3,7 @@ using AutoMapper.QueryableExtensions;
 using HrApi.Domain;
 using HrApi.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
 namespace HrApi.Controllers;
@@ -19,6 +20,33 @@ public class DepartmentsController : ControllerBase
         _context = context;
         _mapper = mapper;
         _config = config;
+    }
+
+    [HttpPut("/departments/{id:int}")]
+    public async Task<ActionResult> UpdateDepartment(int id, [FromBody] DepartmentUpdateRequest request)
+    {
+        var demo = new DepartmentUpdateRequest();
+
+
+        if (id != request.Id)
+        {
+            return BadRequest();
+        }
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        var savedThingy = await _context.GetActiveDepartments().SingleOrDefaultAsync(d => d.Id == id);
+        if (savedThingy is null)
+        {
+            return NotFound(); // or you could do an upsert
+        }
+        else
+        {
+            savedThingy.Name = request.Name; // could use automapper, etc. 
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
     }
 
     [HttpDelete("/departments/{id:int}")]
