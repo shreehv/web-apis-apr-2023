@@ -2,6 +2,7 @@ using AutoMapper;
 using HrApi.Domain;
 using HrApi.Profiles;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 // the default web application builder has about 190+ "Services" that do all the work in your API.
@@ -30,6 +31,7 @@ builder.Services.AddSwaggerGen(c =>
             Url = new Uri("https://opensource.org/license/mit/")
         }
     });
+    var xmlFileName = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
 });
 
 var hrConnectionString = builder.Configuration.GetConnectionString("hr-data");
