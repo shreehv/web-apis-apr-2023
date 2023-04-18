@@ -61,8 +61,13 @@ public class DepartmentsController : ControllerBase
         };
         return Ok(response);
     }
-    [ResponseCache(NoStore = true)]
+
+
+
+
+
     // GET /departments/8
+    [ResponseCache(NoStore = true)]
     [HttpGet("/departments/{id:int}")]
     public async Task<ActionResult<DepartmentsResponse>> GetDepartments(int id)
     {
