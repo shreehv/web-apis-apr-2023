@@ -1,11 +1,10 @@
 ﻿using HrApi.Models;
 
-namespace HrApi.Domain
+namespace HrApi.Domain;
+
+public interface IManageHiringRequests
 {
-    public interface IManageHiringRequests
-    {
-        Task<bool> AssignSalaryAsync(int id, decimal salary);
-        Task<HiringRequestResponseModel> CreateHiringRequestAsync(HiringRequestCreateModel request);
-        Task<HiringRequestResponseModel?> GetHiringRequestByIdAync(int id);
-    }
+    Task<bool> AssignSalaryAsync(int id, decimal salary);
+    Task<HiringRequestResponseModel> CreateHiringRequestAsync(HiringRequestCreateModel request);
+    Task<HiringRequestResponseModel?> GetHiringRequestByIdAsync(int id);
 }
