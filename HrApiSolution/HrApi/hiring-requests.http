@@ -4,7 +4,7 @@ POST http://localhost:1337/hiring-requests
 Content-Type: application/json
 
 {
-  "firstName": "Bob",
+  "firstName": "Joe",
   "lastName": "Dylan",
   "notes": "Super hacker dude. Also plays guitar in some 80's band."
 }
@@ -12,14 +12,16 @@ Content-Type: application/json
 
 ### Get A Hiring Request
 
-GET http://localhost:1337/hiring-requests/2
+GET http://localhost:1337/hiring-requests/5
 
 ### Assigning Salary
 
-PUT http://localhost:1337/hiring-requests/2/salary
+PUT http://localhost:1337/hiring-requests/5/salary
 Content-Type: application/json
 
 {
   "salary": 182000
 }
 
+### Get Salary on a Hiring Request
+GET http://localhost:1337/hiring-requests/5/salary

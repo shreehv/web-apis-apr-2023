@@ -18,6 +18,37 @@ public class EntityFrameworkHiringManager : IManageHiringRequests
         _config = config;
     }
 
+    public async Task<(bool WasFound, int Id)> AssignToDeparment(int departmentId, HiringRequestResponseModel request)
+    {
+        // make sure that department exists.
+        var department = await _context.Departments.SingleOrDefaultAsync(d => d.Id == departmentId);
+        if (department is null) { return (false, 0); }
+
+
+
+        // make sure the hiring request exists and is in the state of waiting for a department.
+        var hiringRequest = await _context.HiringRequests.SingleOrDefaultAsync(r =>
+ r.Id == int.Parse(request.Id) && r.Status == HiringRequestStatus.AwaitingDepartment);
+        if (hiringRequest is null) { return (false, 0); }
+        // Make the hiring request approved.
+        hiringRequest.Status = HiringRequestStatus.Hired;
+        // create an employee out of it.
+        var employee = new EmployeeEntity
+        {
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            Department = department,
+            HiredOn = DateTime.Now,
+            Salary = hiringRequest.Salary
+        };
+        _context.Employees.Add(employee);
+        await _context.SaveChangesAsync();
+
+
+
+        return (true, employee.Id);
+    }
+
     public async Task<bool> AssignSalaryAsync(int id, decimal salary)
     {
         var hiringRequest = await _context.HiringRequests.SingleOrDefaultAsync(h => 
@@ -51,5 +82,20 @@ public class EntityFrameworkHiringManager : IManageHiringRequests
               .ProjectTo<HiringRequestResponseModel>(_config)
               .SingleOrDefaultAsync();
         return response;
+    }
+
+    public async Task<HiringRequestSalaryModel?> GetSalaryForAsync(int id)
+    {
+        var salary = await _context.HiringRequests
+        .Where(r => r.Id == id && r.Status != HiringRequestStatus.AwaitingSalary)
+        .Select(r => r.Salary).SingleOrDefaultAsync();
+        if (salary != 0)
+        {
+            return new HiringRequestSalaryModel { Salary = salary };
+        }
+        else
+        {
+            return null;
+        }
     }
 }

@@ -23,7 +23,6 @@ public record HiringRequestResponseModel
     public string LastName { get; set; } = string.Empty;
     public string Notes { get; set; } = string.Empty;
 
-   
     public HiringRequestStatus Status { get; set; } = HiringRequestStatus.AwaitingSalary;
 }
 
