@@ -37,17 +37,6 @@ namespace HrApi.Domain
             }
         }
 
-        public Task<HiringRequestResponseModel> CreateHiringRequestAsync(HiringRequestCreateModel request)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<HiringRequestResponseModel?> GetHiringRequestByIdAync(int id)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
         public async Task<HiringRequestResponseModel> CreateHiringRequestAsync(HiringRequestCreateModel request)
         {
             var entity = _mapper.Map<HiringRequestEntity>(request);
