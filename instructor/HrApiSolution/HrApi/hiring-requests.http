@@ -17,8 +17,9 @@ GET http://localhost:1337/hiring-requests/2
 ### Assigning Salary
 
 PUT http://localhost:1337/hiring-requests/2/salary
+Content-Type: application/json
 
 {
-  "salary": 82000
+  "salary": 182000
 }
 
