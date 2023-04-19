@@ -1,4 +1,5 @@
 using AutoMapper;
+using HrApi;
 using HrApi.Domain;
 using HrApi.Profiles;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +12,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    // globally now, every controller will use this filter.
+    options.Filters.Add<CancellationTokenExceptionFilter>();
+});
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -37,6 +43,13 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var hrConnectionString = builder.Configuration.GetConnectionString("hr-data");
+//var someValue = builder.Configuration.GetValue<int>("limit");
+var someValue = builder.Configuration.GetValue<bool>("features:demo");
+
+builder.Services.Configure<FeaturesOptions>(
+    builder.Configuration.GetSection(FeaturesOptions.FeatureName)
+ );
+Console.WriteLine($"Got this value for limit {someValue}");
 
 if(hrConnectionString is null)
 {
@@ -70,7 +83,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseAuthorization();
+//app.UseAuthorization();
+
+//app.Use(async (context, next) =>
+//{
+//    await Console.Out.WriteLineAsync($"Just got a request from {context.Request.Headers.UserAgent}");
+//    await next();
+//});
+//app.Use(LoggingStuff.LogIt);
+app.UseSuperLogging();
 
 app.MapControllers(); // it is going to create a phone directory.
 // route table:
