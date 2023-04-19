@@ -24,8 +24,6 @@ public class HrDataContext : DbContext
 
         modelBuilder.Entity<DepartmentEntity>()
             .HasIndex(b => b.Name).IsUnique();
-        modelBuilder.Entity<HiringRequestEntity>()
-            .HasIndex(b => b.Name).IsUnique();
 
     }
 }
