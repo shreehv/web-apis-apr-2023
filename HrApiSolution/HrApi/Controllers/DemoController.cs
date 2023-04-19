@@ -8,10 +8,11 @@ public class DemoController : ControllerBase
     private readonly ILogger<DemoController> _logger;
     private readonly IConfiguration _configuration;
     private readonly IOptions<FeaturesOptions> _options;
-
-    public DemoController(ILogger<DemoController> logger)
+    public DemoController(ILogger<DemoController> logger, IConfiguration configuration, IOptions<FeaturesOptions> options)
     {
         _logger = logger;
+        _configuration = configuration;
+        _options = options;
     }
 
     [HttpGet("/demo")]
@@ -40,11 +41,10 @@ public class DemoController : ControllerBase
         //}
 
         var isEnabled = _options.Value.demo;
-        if (isEnabled)
+        if( isEnabled )
         {
             return Ok(_options.Value.trueMessage);
-        }
-        else
+        } else
         {
             return Ok(_options.Value.falseMessage);
         }

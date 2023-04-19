@@ -17,12 +17,11 @@ builder.Services.AddControllers(options =>
 {
     // globally now, every controller will use this filter.
     options.Filters.Add<CancellationTokenExceptionFilter>();
-    
+
 }).AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
-
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -33,7 +32,7 @@ builder.Services.AddSwaggerGen(c =>
         Version = "v1",
         Contact = new Microsoft.OpenApi.Models.OpenApiContact
         {
-            Name ="Jeff Gonzalez",
+            Name = "Jeff Gonzalez",
             Email = "jeff@aol.com"
         },
         License = new Microsoft.OpenApi.Models.OpenApiLicense
@@ -48,15 +47,18 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var hrConnectionString = builder.Configuration.GetConnectionString("hr-data");
-//var someValue = builder.Configuration.GetValue<int>("limit");
+
 var someValue = builder.Configuration.GetValue<bool>("features:demo");
 
+// IOption<FeaturesOptions>
 builder.Services.Configure<FeaturesOptions>(
     builder.Configuration.GetSection(FeaturesOptions.FeatureName)
- );
-Console.WriteLine($"Got this value for limit {someValue}");
+  );
 
-if(hrConnectionString is null)
+
+Console.WriteLine($"Got this value for the limit {someValue}");
+
+if (hrConnectionString is null)
 {
     throw new Exception("No Connection String for HR Database");
 }
@@ -71,6 +73,7 @@ builder.Services.AddDbContext<HrDataContext>(options =>
 var mapperConfiguration = new MapperConfiguration(options =>
 {
     options.AddProfile<Departments>();
+    options.AddProfile<HiringRequests>();
 });
 
 builder.Services.AddSingleton<IMapper>(mapperConfiguration.CreateMapper());
@@ -88,7 +91,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-//app.UseAuthorization();
+
 
 //app.Use(async (context, next) =>
 //{
@@ -98,13 +101,14 @@ if (app.Environment.IsDevelopment())
 //app.Use(LoggingStuff.LogIt);
 app.UseSuperLogging();
 
+
 app.MapControllers(); // it is going to create a phone directory.
-// route table:
-    // if someone does a GET /deparments:
-            // create an instance of the DepartmentsController
-               // to create an instance of this, you have to give it a HrDataContext
-            // Call the GetDepartments method.
-    // if someone does a get /departments/(SOME INTEGER)
-        // create the departmentcontroller and call getbyid with that integer.
+                      // route table:
+                      // if someone does a GET /deparments:
+                      // create an instance of the DepartmentsController
+                      // to create an instance of this, you have to give it a HrDataContext
+                      // Call the GetDepartments method.
+                      // if someone does a get /departments/(SOME INTEGER)
+                      // create the departmentcontroller and call getbyid with that integer.
 
 app.Run(); // Starting the web server, and "blocking here"
