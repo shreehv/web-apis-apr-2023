@@ -43,7 +43,17 @@ builder.Services.AddSwaggerGen(c =>
 
 var hrConnectionString = builder.Configuration.GetConnectionString("hr-data");
 
-if(hrConnectionString is null)
+var someValue = builder.Configuration.GetValue<bool>("features:demo");
+
+// IOption<FeaturesOptions>
+builder.Services.Configure<FeaturesOptions>(
+    builder.Configuration.GetSection (FeaturesOptions.FeatureName)
+  );
+
+
+Console.WriteLine($"Got this value for the limit {someValue}");
+
+if (hrConnectionString is null)
 {
     throw new Exception("No Connection String for HR Database");
 }
