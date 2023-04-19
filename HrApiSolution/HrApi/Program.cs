@@ -4,6 +4,7 @@ using HrApi.Domain;
 using HrApi.Profiles;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 // the default web application builder has about 190+ "Services" that do all the work in your API.
@@ -16,6 +17,10 @@ builder.Services.AddControllers(options =>
 {
     // globally now, every controller will use this filter.
     options.Filters.Add<CancellationTokenExceptionFilter>();
+    
+}).AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
